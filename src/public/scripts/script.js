@@ -140,7 +140,7 @@ const startRecognition = () => {
 //get the response from the API
 const getResponse = async (prompt) => {
   const response = await fetch(
-    `http://localhost:5050/talk/talk?prompt=${prompt}`
+    `https://gif-bard.onrender.com/talk/talk?prompt=${prompt}`
   );
   const data = await response.json();
   return data;
