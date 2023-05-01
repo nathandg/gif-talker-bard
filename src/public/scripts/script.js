@@ -18,6 +18,9 @@ sup1.load(() => {
   });
 });
 
+//server IP
+let serverUrl = window.location.origin;
+
 // get transcription text
 const transcription = document.getElementsByClassName("transcription")[0];
 
@@ -117,44 +120,45 @@ const startRecognition = () => {
 
   recognition.onstart = () => {
     console.log("Speech recognition started");
-    transcription.textContent = "Listening for speech";
+    setTimeout(() => {
+      transcription.textContent = "Speak now ...";
+    }, 1000);
   };
 
-  // Register a callback that is called when speech is recognized
   recognition.onresult = async (event) => {
     const transcript = event.results[0][0].transcript;
-    console.log("Recognized speech:", transcript);
-    transcription.textContent = transcript;
+    transcription.textContent = transcript + ' ? ';
     recognition.stop();
     await playSynchronized(transcript);
   };
 
   // Register a callback that is called when an error occurs in speech recognition
   recognition.onerror = (event) => {
-    alert(`Speech recognition error detected: ${event.error}`);
-    alert(`Additional information: ${event.message}`);
+    alert("Erro in speech recognition, please enable microphone and use Chrome !");
   };
 };
 
 //API from responses
 //get the response from the API
 const getResponse = async (prompt) => {
-  const response = await fetch(
-    `https://gif-bard.onrender.com/talk/talk?prompt=${prompt}`
-  );
-  const data = await response.json();
-  return data;
+  try {
+    const response = await fetch(
+      `${serverUrl}/talk/ask?prompt=${prompt}`
+      );
+      return await response.json();
+  } catch (error) {
+    return 'Sorry, this bard access is not working';
+  }
 };
 
 //Reponse extraction
 const extractResponse = (response) => {
   console.log(response);
   //verify if contains the response ('*')
-  if(response.includes('>')){
-    return response.split('>')[1];
-  } else if (response.includes(':**')) {
+  if (response.includes(':**')) {
     return response.split(':**')[1];
+  } if(response.includes('>')){
+    return response.split('>')[1];
   } 
-
   return response;
 }

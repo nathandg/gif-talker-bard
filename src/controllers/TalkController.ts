@@ -13,7 +13,7 @@ class TalkController {
 
   public talk(req: Request, res: Response): void {
     this.talkService
-      .ask(req.query.prompt as string, 'nathan')
+      .ask(req.query.prompt as string, 'trump')
       .then((response) => {
         res.json(response).status(200);
       })

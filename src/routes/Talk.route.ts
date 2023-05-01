@@ -5,6 +5,6 @@ import TalkController from "../controllers/TalkController.js";
 const talkController = container.resolve(TalkController);
 const TalkRouter = Router();
 
-TalkRouter.get("/talk", talkController.talk.bind(talkController));
+TalkRouter.get("/ask", talkController.talk.bind(talkController));
 
 export { TalkRouter };

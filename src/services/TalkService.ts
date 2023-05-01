@@ -15,7 +15,7 @@ class TalkService {
   }
 
   async ask(prompt: string, conversationId?: string) {
-    return await this.bard.ask(`Answer the following prompt using no more than 3 lines, in the style of President Donald Trump. Prompt: ${prompt}. Please provide only the concise answer in your response. Do not include instructions such as 'a concise response'. Thank you.`, this.session);
+    return await this.bard.ask(`Respond in the style of President Donald Trump, the question is ${prompt}. please answer concisely`, this.session);
   }
 
   async trainNewConversation() {
