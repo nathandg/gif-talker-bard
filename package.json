@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node ./dist/server.js",
+    "start": "npx ts-node --esm src/server.ts",
     "dev": "nodemon --esm ./src/server.ts",
     "build": "tsc"
   },

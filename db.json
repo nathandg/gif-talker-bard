@@ -2,18 +2,11 @@
     "conversations": {
         "rows": [
             {
-                "id": "maria",
-                "c": "c_43ef5824cfd23e9e",
-                "r": "r_6417b7c73c66eef0",
-                "rc": "rc_6417b7c73c66e2ba",
-                "lastActive": 1682911676347
-            },
-            {
-                "id": "nathan",
-                "c": "c_8b90062a5dfc581a",
-                "r": "r_4068fe24328583af",
-                "rc": "rc_4068fe2432858f23",
-                "lastActive": 1682913429314
+                "id": "trump",
+                "c": "c_36778ea8fba7dd0f",
+                "r": "r_c809444cd9dbd0b5",
+                "rc": "rc_c809444cd9dbde83",
+                "lastActive": 1682954696741
             }
         ],
         "name": "conversations"
