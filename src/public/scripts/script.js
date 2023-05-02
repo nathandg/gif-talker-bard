@@ -1,13 +1,14 @@
+const transcriptionContainer = document.getElementById("footer");
 // Load the Gif
 const gifContainer = document.getElementById("imagecontainer");
 const gif = document.getElementById("exampleimg");
 const sup1 = new SuperGif({ gif });
 
 const fistClick = () => {
-  startRecognition();
+  transcription.textContent = "Click here to speak !";
   gifContainer?.removeEventListener("click", fistClick);
-  gifContainer?.addEventListener("click", () => {
-    window.location.reload();
+  transcriptionContainer?.addEventListener("click", () => {
+    startRecognition();
   });
 }
 
