@@ -1,33 +1,23 @@
+
+// Get DOM elements
 const transcriptionContainer = document.getElementById("footer");
-// Load the Gif
 const gifContainer = document.getElementById("imagecontainer");
 const gif = document.getElementById("exampleimg");
+const transcription = document.getElementsByClassName("transcription")[0];
+
+// Load the GIF
 const sup1 = new SuperGif({ gif });
-
-const firstClick = () => {
-  transcription.textContent = "Click here to speak !";
-  gifContainer?.removeEventListener("click", firstClick);
-  transcriptionContainer?.addEventListener("click", () => {
-    startRecognition();
-  });
-}
-
 sup1.load(() => {
-  console.log("gif loaded");
+  console.log("GIF loaded");
   gifContainer?.addEventListener("click", () => {
-    firstClick();
+    startRecognition();
   });
 });
 
-//server IP
-let serverUrl = window.location.origin;
+// Set server URL
+const serverUrl = window.location.origin;
 
-// get transcription text
-const transcription = document.getElementsByClassName("transcription")[0];
-
-// ---------------------
-// Playing TTS in sync
-// ---------------------
+// Play TTS in sync
 const playSynchronized = async (answer) => {
   console.log("playSynchronized()");
   if (!("speechSynthesis" in window)) {
@@ -52,7 +42,7 @@ const playSynchronized = async (answer) => {
     };
     waitUntilReady();
   });
-  console.log("selected voice");
+  console.log("Selected voice");
 
   const response = await getResponse(answer);
   const text = extractResponse(response);
@@ -71,7 +61,7 @@ const playSynchronized = async (answer) => {
     for (let i = 0; i < substrings.length; i++) {
       const str = substrings[i].trim();
 
-      // Make sure there is something to say other than the deliminator
+      // Make sure there is something to say other than the delimiter
       const numpunc = (str.match(/[.?,!]/g) || []).length;
       if (str.length - numpunc > 0) {
         // Surprisingly decent approximation for multiple languages.
@@ -100,67 +90,77 @@ const playSynchronized = async (answer) => {
   firstClick();
 };
 
-let recognition;
-
-// Check if the browser supports SpeechRecognition
-if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
-  // Create a new SpeechRecognition object
-  recognition = new (window.SpeechRecognition ||
-    window.webkitSpeechRecognition)();
-
-  // Configure the API to recognize speech in English
-  recognition.lang = "en-US";
-} else {
-  console.log("Speech recognition not supported");
-}
-
-
+// Start speech recognition
 const startRecognition = () => {
   console.log("startRecognition()");
-  recognition.start();
+  let timeoutId;
 
-  timeoutId = setTimeout(() => {
-    recognition.stop();
-    alert("No speech was detected. You may need to adjust your microphone.");
-    firstClick();
-  }, 5000);
+  // Check if the browser supports SpeechRecognition
+  if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
+    // Create a new SpeechRecognition object
+    const recognition = new (window.SpeechRecognition ||
+      window.webkitSpeechRecognition)();
 
-  recognition.onstart = () => { 
-    console.log("Speech recognition started");
-    setTimeout(() => {
-      transcription.textContent = "Listening...";
-    }, 1000);
-  };
+    // Configure the API to recognize speech in English
+    recognition.lang = "en-US";
 
-  recognition.onresult = async (event) => {
-    clearTimeout(timeoutId);
-    const transcript = event.results[0][0].transcript;
-    transcription.textContent = transcript + ' ? ';
-    recognition.stop();
-    await playSynchronized(transcript);
-  };
+    recognition.start();
 
-  recognition.onerror = (event) => {
-    alert("Erro in speech recognition, please enable microphone and use Chrome !");
-  };
+    // timeoutId = setTimeout(() => {
+    //   recognition.stop();
+    //   alert("No speech was detected. You may need to adjust your microphone.");
+    //   firstClick();
+    // }, 30000);
+
+    recognition.onstart = () => {
+      console.log("Speech recognition started");
+      setTimeout(() => {
+        transcription.textContent = "Listening...";
+      }, 1000);
+    };
+
+    recognition.onresult = async (event) => {
+      // clearTimeout(timeoutId);
+      const transcript = event.results[0][0].transcript;
+      transcription.textContent = transcript + ' ? ';
+      recognition.stop();
+      await playSynchronized(transcript);
+    };
+
+    recognition.onerror = (event) => {
+      // clearTimeout(timeoutId);
+      alert("Error in speech recognition. Please enable microphone and use Chrome!");
+    };
+  } else {
+    console.log("Speech recognition not supported");
+  }
 };
 
-//get the response from the API
+// Handle first click
+const firstClick = () => {
+  transcription.textContent = "Click here to speak!";
+  gifContainer?.removeEventListener("click", firstClick);
+  transcriptionContainer?.addEventListener("click", () => {
+    startRecognition();
+  });
+};
+
+// Get response from the API
 const getResponse = async (prompt) => {
   try {
     const response = await fetch(
       `${serverUrl}/talk/ask?prompt=${prompt}`
-      );
-      return await response.json();
+    );
+    return await response.json();
   } catch (error) {
     return 'Sorry, this bard access is not working';
   }
 };
 
-//Reponse extraction
+// Extract response
 const extractResponse = (response) => {
   console.log(response);
-  //verify if contains the response ('*')
+  // Verify if contains the response ('*')
   if (response.includes(':**')) {
     return response.split(':**')[1];
   } else if(response.includes('>')){
@@ -172,4 +172,4 @@ const extractResponse = (response) => {
     return response.split(':')[1];
   }
   return response;
-}
+};
