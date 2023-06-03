@@ -21,7 +21,7 @@ body {
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
-  height: 95%;
+  height: 100%;
   width: 100%;
 }
 
@@ -59,6 +59,12 @@ h2 {
   border: 10px solid #fff;
   border-radius: 5px;
   box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.164);
+}
+
+@media screen and (max-height: 1000px) {
+  #imagecontainer {
+    height: 50vh;
+  }
 }
 
 #imagecontainer:hover {

@@ -4,9 +4,9 @@ const gifContainer = document.getElementById("imagecontainer");
 const gif = document.getElementById("exampleimg");
 const sup1 = new SuperGif({ gif });
 
-const fistClick = () => {
+const firstClick = () => {
   transcription.textContent = "Click here to speak !";
-  gifContainer?.removeEventListener("click", fistClick);
+  gifContainer?.removeEventListener("click", firstClick);
   transcriptionContainer?.addEventListener("click", () => {
     startRecognition();
   });
@@ -15,7 +15,7 @@ const fistClick = () => {
 sup1.load(() => {
   console.log("gif loaded");
   gifContainer?.addEventListener("click", () => {
-    fistClick();
+    firstClick();
   });
 });
 
@@ -97,7 +97,7 @@ const playSynchronized = async (answer) => {
 
   await proceessTextToSpeech();
 
-  startRecognition();
+  firstClick();
 };
 
 let recognition;
@@ -114,32 +114,37 @@ if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
   console.log("Speech recognition not supported");
 }
 
+
 const startRecognition = () => {
   console.log("startRecognition()");
-  // Start speech recognition
   recognition.start();
 
-  recognition.onstart = () => {
+  timeoutId = setTimeout(() => {
+    recognition.stop();
+    alert("No speech was detected. You may need to adjust your microphone.");
+    firstClick();
+  }, 5000);
+
+  recognition.onstart = () => { 
     console.log("Speech recognition started");
     setTimeout(() => {
-      transcription.textContent = "Speak now ...";
+      transcription.textContent = "Listening...";
     }, 1000);
   };
 
   recognition.onresult = async (event) => {
+    clearTimeout(timeoutId);
     const transcript = event.results[0][0].transcript;
     transcription.textContent = transcript + ' ? ';
     recognition.stop();
     await playSynchronized(transcript);
   };
 
-  // Register a callback that is called when an error occurs in speech recognition
   recognition.onerror = (event) => {
     alert("Erro in speech recognition, please enable microphone and use Chrome !");
   };
 };
 
-//API from responses
 //get the response from the API
 const getResponse = async (prompt) => {
   try {
@@ -158,8 +163,13 @@ const extractResponse = (response) => {
   //verify if contains the response ('*')
   if (response.includes(':**')) {
     return response.split(':**')[1];
-  } if(response.includes('>')){
+  } else if(response.includes('>')){
     return response.split('>')[1];
-  } 
+  } else if (response.includes('```')){
+    const initialCut = response.split('```')[1];
+    return initialCut.split('```')[0];
+  }else if (response.includes(':')){
+    return response.split(':')[1];
+  }
   return response;
 }
